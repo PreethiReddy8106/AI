@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>AI Bike Assistant</title>
+
+    <link rel="stylesheet" href="/static/style.css">
+
+</head>
+
+<body>
+
+    <div class="sidebar">
+
+        <div class="logo">
+            🏍️ BIKE AI
+        </div>
+
+        <div class="feature">
+            🔧 Troubleshooting
+        </div>
+
+        <div class="feature">
+            ⚙️ Spare Parts
+        </div>
+
+        <div class="feature">
+            🛠️ Maintenance
+        </div>
+
+        <div class="feature">
+            🚀 Recommendations
+        </div>
+
+        <div class="feature">
+            📘 Bike Terms
+        </div>
+
+    </div>
+
+    <div class="main">
+
+        <div class="header">
+
+            <h1>🏍️ AI Bike Assistant</h1>
+
+            <p>Your Personal Motorcycle Expert</p>
+
+        </div>
+
+        <div class="quick">
+
+            <button onclick="askQuick('What is torque?')">
+                Torque
+            </button>
+
+            <button onclick="askQuick('What is ABS?')">
+                ABS
+            </button>
+
+            <button onclick="askQuick('Suggest sports bike')">
+                Sports Bike
+            </button>
+
+            <button onclick="askQuick('Bike not starting')">
+                Troubleshooting
+            </button>
+
+        </div>
+
+        <div id="chatbox">
+
+            <div class="bot">
+
+                <b>🏍️ Welcome Rider!</b>
+
+                <br><br>
+
+                I can help with:
+
+                <br><br>
+
+                🔧 Troubleshooting
+                <br>
+
+                ⚙️ Spare Parts
+                <br>
+
+                🛠️ Maintenance
+                <br>
+
+                🚀 Bike Recommendations
+                <br>
+
+                📘 Bike Terms
+
+                <br><br>
+
+                Try asking:
+                <br>
+
+                • What is torque?
+                <br>
+
+                • What is ABS?
+                <br>
+
+                • Bike not starting
+                <br>
+
+                • Suggest sports bike
+
+            </div>
+
+        </div>
+
+        <div class="input-area">
+
+            <input
+                type="text"
+                id="userInput"
+                placeholder="Ask anything about motorcycles...">
+
+            <button onclick="sendMessage()">
+                Send
+            </button>
+
+        </div>
+
+        <div class="footer">
+            AI Bike Assistant | Mini Project
+        </div>
+
+    </div>
+
+<script>
+
+function askQuick(question){
+
+    document.getElementById("userInput").value = question;
+
+    sendMessage();
+
+}
+
+function sendMessage(){
+
+    let userText =
+    document.getElementById("userInput").value;
+
+    if(userText.trim() === ""){
+        return;
+    }
+
+    let chatbox =
+    document.getElementById("chatbox");
+
+    chatbox.innerHTML +=
+    `
+    <div class="user">
+        <b>You</b><br>
+        ${userText}
+    </div>
+    `;
+
+    document.getElementById("userInput").value = "";
+
+    let typingDiv = document.createElement("div");
+
+    typingDiv.className = "bot";
+
+    typingDiv.id = "typing";
+
+    typingDiv.innerHTML =
+    "<b>🏍️ Bike Assistant</b><br>Typing...";
+
+    chatbox.appendChild(typingDiv);
+
+    chatbox.scrollTop =
+    chatbox.scrollHeight;
+
+    fetch("/get?msg=" + encodeURIComponent(userText))
+
+    .then(response => response.text())
+
+    .then(data => {
+
+        document.getElementById("typing").remove();
+
+        chatbox.innerHTML +=
+        `
+        <div class="bot">
+            <b>🏍️ Bike Assistant</b><br>
+            ${data.replace(/\n/g,"<br>")}
+        </div>
+        `;
+
+        chatbox.scrollTop =
+        chatbox.scrollHeight;
+
+    })
+
+    .catch(error => {
+
+        if(document.getElementById("typing")){
+            document.getElementById("typing").remove();
+        }
+
+        chatbox.innerHTML +=
+        `
+        <div class="bot">
+            ⚠️ Error getting response.
+        </div>
+        `;
+
+        console.error(error);
+
+    });
+
+}
+
+document
+.getElementById("userInput")
+.addEventListener("keypress", function(event){
+
+    if(event.key === "Enter"){
+        sendMessage();
+    }
+
+});
+
+</script>
+
+</body>
+
+</html>
