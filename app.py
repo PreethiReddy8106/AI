@@ -1,0 +1,21 @@
+from flask import Flask, render_template, request
+from responses import get_response
+
+app = Flask(__name__)
+
+@app.route("/")
+def home():
+    return render_template("index.html")
+
+@app.route("/get")
+def chatbot_response():
+
+    user_text = request.args.get("msg")
+
+    if not user_text:
+        return "Please enter a question."
+
+    return get_response(user_text)
+
+if __name__ == "__main__":
+    app.run(debug=True)
